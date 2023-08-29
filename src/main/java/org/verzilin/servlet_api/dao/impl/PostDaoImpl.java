@@ -1,28 +1,26 @@
 package org.verzilin.servlet_api.dao.impl;
 
-import org.verzilin.servlet_api.config.JdbcConnect;
+import org.verzilin.servlet_api.config.JdbcConnectionProvider;
 import org.verzilin.servlet_api.dao.PostDao;
 import org.verzilin.servlet_api.domain.Post;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 public class PostDaoImpl implements PostDao {
     @Override
     public boolean savePost(Post post) {
-        String sqlCreatePost = "INSERT INTO post (title, text, author)" +
-                "VALUES (?,?,?)";
-        try (Connection connection = JdbcConnect.getConnection();
+        String sqlCreatePost = "INSERT INTO post (title, text, author) VALUES (?,?,?)";
+        try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement createPost = connection.prepareStatement(sqlCreatePost)) {
             createPost.setString(1, post.getTitle());
             createPost.setString(2, post.getText());
             createPost.setLong(3, post.getAuthor().getId());
             createPost.executeUpdate();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.getStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return true;
     }
