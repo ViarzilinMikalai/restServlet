@@ -26,12 +26,23 @@ public class PostDaoImpl implements PostDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return (result == 0) ? false : true;
+        return (result != 0);
     }
 
     @Override
     public boolean updatePost(Post post) {
-        return false;
+        int result = 0;
+        String sqlUpdatePost = "UPDATE post SET  title = ? , text = ? WHERE id = ?";
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement updatePost = connection.prepareStatement(sqlUpdatePost)) {
+            updatePost.setString(1, post.getTitle());
+            updatePost.setString(2, post.getText());
+            updatePost.setLong(3, post.getId());
+            result = updatePost.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (result != 0);
     }
 
     @Override
@@ -67,7 +78,6 @@ public class PostDaoImpl implements PostDao {
             while (rs.next()) {
                 Post post = new Post(rs.getLong("id"), rs.getString("title"), rs.getString("text"), new User());
                 posts.add(post);
-                rs.next();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,6 +87,15 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public boolean remove(Long id) {
-        return false;
+        int result = 0;
+        String sqlDeletePost = "DELETE FROM post WHERE id = ?";
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement deletePost = connection.prepareStatement(sqlDeletePost)) {
+            deletePost.setLong(1, id);
+            result = deletePost.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (result != 0);
     }
 }

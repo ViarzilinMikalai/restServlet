@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @Testcontainers
-public class PostDaoImplTest {
+class PostDaoImplTest {
     PostDaoImpl postDao = new PostDaoImpl();
 
     @Container
@@ -31,6 +31,9 @@ public class PostDaoImplTest {
             .withDatabaseName("foo")
             .withUsername("foo")
             .withPassword("secret");
+
+    public PostDaoImplTest() throws SQLException {
+    }
 
 //    @BeforeEach
 //    public void CleanUpEach() throws SQLException {
@@ -40,7 +43,9 @@ public class PostDaoImplTest {
 //    }
 
     @Test
-    public void testSavePost() throws SQLException {
+    void testSavePost() throws SQLException {
+        psql.stop();
+        System.out.println(psql.isRunning());
         /**
          * Creating Post for saving
          */
@@ -62,6 +67,23 @@ public class PostDaoImplTest {
 
     @Test
     void testUpdatePost() {
+        User user = new User();
+        user.setId(1L);
+        Post post = new Post(1L,"New post title", "New post text", user);
+        postDao.updatePost(post);
+        Post postFromBD = postDao.getById(1L);
+        assertEquals("New post title", postFromBD.getTitle());
+        assertEquals("New post text", postFromBD.getText());
+    }
+
+    @Test
+    void testGetAllPost() {
+        postDao.savePost(new Post("post1", "test1", new User(1L)));
+        postDao.savePost(new Post("post2", "test2", new User(2L)));
+        postDao.savePost(new Post("post3", "test3", new User(3L)));
+
+        List<Post> posts = postDao.getAllPost();
+        assertTrue(posts.size() == 4);
     }
 
     @Test
@@ -71,7 +93,7 @@ public class PostDaoImplTest {
         Post post = postDao.getById(2L);
         assertTrue(Objects.nonNull(post));
         assertTrue(post.getId() == 2);
-        assertTrue(post.getTitle().equals("Test title"));
+        assertTrue(post.getTitle().equals("post1"));
     }
 
     @Test
@@ -83,13 +105,10 @@ public class PostDaoImplTest {
     }
 
     @Test
-    void testGetAllPost() {
-        List<Post> posts = postDao.getAllPost();
-        assertTrue(posts.size() == 4);
-    }
-
-    @Test
     void testRemove() {
+        postDao.remove(1l);
+        Post post = postDao.getById(1L);
+        assertEquals(null, post);
     }
 
     /**
