@@ -1,5 +1,8 @@
 package org.verzilin.servlet_api.dao.impl;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -12,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,12 +31,18 @@ public class PostDaoImplTest {
             .withUsername("foo")
             .withPassword("secret");
 
+    @BeforeEach
+    public void CleanUpEach() throws SQLException {
+        String deleteById = "DELETE FROM post WHERE id = 1";
+        executeUpdateDB(deleteById);
+
+    }
+
     @Test
     public void testSavePost() throws SQLException {
         /**
          * Creating Post for saving
          */
-        psql.start();
         User user = new User();
         user.setId(1L);
         Post post = new Post("Post title", "Post text", user);
@@ -42,49 +52,63 @@ public class PostDaoImplTest {
          * Reading saved post fom DB
          */
         String selectByTitle = "SELECT * FROM post WHERE title ='Post title'";
-        ResultSet rs = readFromDB(selectByTitle);
+        ResultSet rs = executeQueryDB(selectByTitle);
         if (rs.next()) {
             assertEquals("Post title", rs.getString("title"));
             assertEquals("Post text", rs.getString("text"));
         }
-
     }
 
-
-
-//        try {
-//
-//            Connection conn = JdbcConnect.getConnection();
-//            String createTable = "CREATE TABLE post (id INTEGER AUTO_INCREMENT, title VARCHAR(255), text VARCHAR(2000), PRIMARY KEY(id))";
-//            PreparedStatement stmt = conn.prepareStatement(createTable);
-//            stmt.execute();
-//
-//            String insertData = "INSERT INTO Users (name) VALUES ('John')";
-//            stmt = conn.prepareStatement(insertData);
-//            stmt.execute();
-//
-//            String selectAll = "SELECT * FROM Users";
-//            stmt = conn.prepareStatement(selectAll);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            rs.next();
-//            assertEquals(1, rs.getInt("id"));
-//            assertEquals("John", rs.getString("name"));
-//        } catch (Exception e) {
-//
-//        }
-//    }
+    @Test
+    void testUpdatePost() {
+    }
 
     @Test
-    void updatePost() {
+    void testGetById() throws SQLException {
+        String createPost = "INSERT INTO post (title, text, author) VALUES ('Test title', 'Test text', '1')";
+        executeUpdateDB(createPost);
+        Post post = postDao.getById(2L);
+        assertTrue(Objects.nonNull(post));
+        assertTrue(post.getId() == 2);
+        assertTrue(post.getTitle().equals("Test title"));
+    }
+
+    @Test
+    void testGetByIdWherePostNotFound() throws SQLException {
+        String createPost = "INSERT INTO post (title, text, author) VALUES ('Test title', 'Test text', '1')";
+        executeUpdateDB(createPost);
+        Post post = postDao.getById(1L);
+        assertTrue(Objects.isNull(post));
+    }
+
+    @Test
+    void testGetAllPost() {
+    }
+
+    @Test
+    void testRemove() {
     }
 
     /**
-     reading from DB
+     * reading from DB
+     * @param sqlRequest
+     * @return
+     * @throws SQLException
      */
-    private ResultSet readFromDB(String sqlRequest) throws SQLException{
+    private ResultSet executeQueryDB(String sqlRequest) throws SQLException{
         Connection connection = JdbcConnectionProvider.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sqlRequest);
         return stmt.executeQuery();
+    }
+
+    /**
+     * updateDB
+     * @param sqlRequest
+     * @throws SQLException
+     */
+    private void executeUpdateDB(String sqlRequest) throws SQLException{
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sqlRequest);
+        stmt.executeUpdate();
     }
 }
