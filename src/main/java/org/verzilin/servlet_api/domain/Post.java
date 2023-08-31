@@ -14,6 +14,13 @@ public class Post {
         this.author = author;
     }
 
+    public Post(Long id, String title, String text, User author) {
+        this.id = id;
+        this.title = title;
+        this.text = text;
+        this.author = author;
+    }
+
     public Post() {
     }
 

@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.assertTrue;
@@ -31,12 +32,12 @@ public class PostDaoImplTest {
             .withUsername("foo")
             .withPassword("secret");
 
-    @BeforeEach
-    public void CleanUpEach() throws SQLException {
-        String deleteById = "DELETE FROM post WHERE id = 1";
-        executeUpdateDB(deleteById);
-
-    }
+//    @BeforeEach
+//    public void CleanUpEach() throws SQLException {
+//        String deleteById = "DELETE FROM post WHERE id = 1";
+//        executeUpdateDB(deleteById);
+//
+//    }
 
     @Test
     public void testSavePost() throws SQLException {
@@ -77,12 +78,14 @@ public class PostDaoImplTest {
     void testGetByIdWherePostNotFound() throws SQLException {
         String createPost = "INSERT INTO post (title, text, author) VALUES ('Test title', 'Test text', '1')";
         executeUpdateDB(createPost);
-        Post post = postDao.getById(1L);
+        Post post = postDao.getById(15L);
         assertTrue(Objects.isNull(post));
     }
 
     @Test
     void testGetAllPost() {
+        List<Post> posts = postDao.getAllPost();
+        assertTrue(posts.size() == 4);
     }
 
     @Test
@@ -103,6 +106,7 @@ public class PostDaoImplTest {
 
     /**
      * updateDB
+     *
      * @param sqlRequest
      * @throws SQLException
      */

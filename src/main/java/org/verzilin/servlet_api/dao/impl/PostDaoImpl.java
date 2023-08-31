@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostDaoImpl implements PostDao {
@@ -57,12 +58,21 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public List<Post> getAllPost() {
-        return null;
-    }
+        String sqlGetAllPost = "SELECT * FROM post";
+        ArrayList<Post> posts = new ArrayList<>();
 
-    @Override
-    public List<Post> getPostByUsername(String username) {
-        return null;
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
+            ResultSet rs = getPost.executeQuery();
+            while (rs.next()) {
+                Post post = new Post(rs.getLong("id"), rs.getString("title"), rs.getString("text"), new User());
+                posts.add(post);
+                rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
     }
 
     @Override

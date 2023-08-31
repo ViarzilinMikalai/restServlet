@@ -9,6 +9,5 @@ public interface PostDao {
     boolean updatePost(Post post);
     Post getById(Long id);
     List<Post> getAllPost();
-    List<Post> getPostByUsername(String username);
     boolean remove(Long id);
 }
