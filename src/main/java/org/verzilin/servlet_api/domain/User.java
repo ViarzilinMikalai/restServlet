@@ -5,12 +5,24 @@ import java.util.*;
 public class User {
     private Long id;
     private String username;
+
+    private String password;
+
     private Set<User> subscribers = new HashSet<>();
     private Set<User> subscriptions = new HashSet<>();
-
     private List<Post> posts = new ArrayList<>();
 
     public User(String username) {
+        this.username = username;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public User(Long id, String username) {
+        this.id = id;
         this.username = username;
     }
 
@@ -35,6 +47,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<User> getSubscribers() {
