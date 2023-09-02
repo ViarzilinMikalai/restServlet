@@ -1,5 +1,7 @@
 package org.verzilin.servlet_api.dao.impl;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,27 +24,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Testcontainers
 class PostDaoImplTest {
     PostDaoImpl postDao = new PostDaoImpl();
-
     @Container
-    PostgreSQLContainer psql = new PostgreSQLContainer("postgres:14.1-alpine")
-            .withDatabaseName("foo")
-            .withUsername("foo")
-            .withPassword("secret");
+    PostgreSQLContainer psql;
 
-    public PostDaoImplTest() throws SQLException {
+    @BeforeEach
+    public void init(){
+        psql = new PostgreSQLContainer("postgres:14.1-alpine")
+                .withDatabaseName("foo")
+                .withUsername("foo")
+                .withPassword("secret");
+        psql.start();
     }
 
-//    @BeforeEach
-//    public void CleanUpEach() throws SQLException {
-//        String deleteById = "DELETE FROM post WHERE id = 1";
-//        executeUpdateDB(deleteById);
-//
-//    }
+    @AfterEach
+    public void clean() {
+        psql.stop();
+    }
 
     @Test
     void testSavePost() throws SQLException {
-        psql.stop();
-        System.out.println(psql.isRunning());
         /**
          * Creating Post for saving
          */
