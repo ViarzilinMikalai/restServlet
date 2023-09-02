@@ -5,9 +5,7 @@ import java.util.*;
 public class User {
     private Long id;
     private String username;
-
     private String password;
-
     private Set<User> subscribers = new HashSet<>();
     private Set<User> subscriptions = new HashSet<>();
     private List<Post> posts = new ArrayList<>();

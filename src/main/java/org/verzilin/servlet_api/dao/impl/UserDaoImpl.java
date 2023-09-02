@@ -16,7 +16,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean saveUser(User user) {
         int result = 0;
-        String sqlCreateUser = "INSERT INTO user (username, password) VALUES (?,?)";
+        String sqlCreateUser = "INSERT INTO users (username, password) VALUES (?,?)";
         try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement createUser = connection.prepareStatement(sqlCreateUser)) {
             createUser.setString(1, user.getUsername());
@@ -31,7 +31,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean updateUser(User user) {
         int result = 0;
-        String sqlUpdateUser = "UPDATE user SET  username = ? , password = ? WHERE id = ?";
+        String sqlUpdateUser = "UPDATE users SET  username = ? , password = ? WHERE id = ?";
         try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement updateUser = connection.prepareStatement(sqlUpdateUser)) {
             updateUser.setString(1, user.getUsername());
@@ -46,7 +46,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getById(Long id) {
-        String sqlGetPostById = "SELECT * FROM post WHERE id = ?";
+        String sqlGetPostById = "SELECT * FROM users WHERE id = ?";
         User user = null;
 
         try (Connection connection = JdbcConnectionProvider.getConnection();
@@ -67,7 +67,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        String sqlGetAllUser = "SELECT * FROM user";
+        String sqlGetAllUser = "SELECT * FROM users";
         ArrayList<User> users = new ArrayList<>();
 
         try (Connection connection = JdbcConnectionProvider.getConnection();
@@ -86,7 +86,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean remove(Long id) {
         int result = 0;
-        String sqlDeleteUser = "DELETE FROM user WHERE id = ?";
+        String sqlDeleteUser = "DELETE FROM users WHERE id = ?";
         try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement deleteUser = connection.prepareStatement(sqlDeleteUser)) {
             deleteUser.setLong(1, id);
