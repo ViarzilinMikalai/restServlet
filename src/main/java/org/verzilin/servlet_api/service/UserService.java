@@ -15,9 +15,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class UserService {
-    UserDao userDao = new UserDaoImpl();
+    UserDao userDao;
     UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     ObjectMapper objectMapper = new ObjectMapper();
+
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     public Optional<String> getUsers(Long id) throws JsonProcessingException {
         Optional<String> request = Optional.empty();
@@ -43,5 +47,19 @@ public class UserService {
     public boolean createUser(String requestBody) throws JsonProcessingException {
         UserDto userDto = objectMapper.readValue(requestBody, UserDto.class);
         return userDao.saveUser(userMapper.userDTOToUser(userDto));
+    }
+
+    public boolean updateUser(Long id, String requestBody) throws JsonProcessingException {
+        boolean isUpdated = false;
+        if (Objects.nonNull(id) && Objects.nonNull(userDao.getById(id))) {
+            UserDto userDto = objectMapper.readValue(requestBody, UserDto.class);
+            userDto.setId(id);
+            isUpdated = userDao.updateUser(userMapper.userDTOToUser(userDto));
+        }
+        return isUpdated;
+    }
+
+    public boolean removeUser(Long id) {
+        return userDao.remove(id);
     }
 }

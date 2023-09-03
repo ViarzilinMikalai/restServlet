@@ -23,16 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 class PostDaoImplTest {
-    PostDaoImpl postDao = new PostDaoImpl();
+    private PostDaoImpl postDao = new PostDaoImpl();
     @Container
-    PostgreSQLContainer psql;
+    private PostgreSQLContainer psql = new PostgreSQLContainer("postgres:14.1-alpine")
+        .withDatabaseName("foo")
+        .withUsername("foo")
+        .withPassword("secret");
 
     @BeforeEach
     public void init(){
-        psql = new PostgreSQLContainer("postgres:14.1-alpine")
-                .withDatabaseName("foo")
-                .withUsername("foo")
-                .withPassword("secret");
         psql.start();
     }
 
