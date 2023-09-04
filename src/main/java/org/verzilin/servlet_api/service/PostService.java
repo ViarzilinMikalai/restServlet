@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.factory.Mappers;
 import org.verzilin.servlet_api.dao.PostDao;
-import org.verzilin.servlet_api.dao.impl.PostDaoImpl;
 import org.verzilin.servlet_api.domain.Post;
 import org.verzilin.servlet_api.dto.PostDto;
 import org.verzilin.servlet_api.mapper.PostMapper;

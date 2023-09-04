@@ -1,15 +1,11 @@
 package org.verzilin.servlet_api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.verzilin.servlet_api.dao.UserDao;
 import org.verzilin.servlet_api.dao.impl.UserDaoImpl;
 import org.verzilin.servlet_api.domain.Post;
 import org.verzilin.servlet_api.domain.User;
-import org.verzilin.servlet_api.dto.UserDto;
-import org.verzilin.servlet_api.mapper.UserMapper;
-import org.verzilin.servlet_api.mapper.UserMapperImpl;
 
 import java.util.ArrayList;
 import java.util.List;
