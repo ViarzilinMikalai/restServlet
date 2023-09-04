@@ -14,16 +14,21 @@ import java.io.PrintWriter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@WebServlet
+@WebServlet(name = "UserServlet", urlPatterns = "/users/*")
 public class UserServlet extends HttpServlet {
     private static final String CHAR_SET = "UTF-8";
 
-    private final UserService userService = new UserService(new UserDaoImpl());
+    private final UserService userService;
+
+    public UserServlet(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        Long id = getId(req);
+        String requestPath = req.getPathInfo();
+        String[] pathArray = requestPath.split("/");
+        Long id = (pathArray.length > 0) ? Long.parseLong(pathArray[1]) : null;
 
         Optional<String> getResponse = userService.getUsers(id);
         if (getResponse.isPresent()) {
@@ -85,8 +90,9 @@ public class UserServlet extends HttpServlet {
     }
 
     private Long getId(HttpServletRequest req) {
-        String requestPath = req.getParameter("id");
-        return StringUtils.isNumeric(requestPath) ? Long.parseLong(requestPath) : null;
+        String requestPath = req.getPathInfo();
+        String[] pathArray = requestPath.split("/");
+        return Long.parseLong(pathArray[1]);
     }
 
     private String getBodyParams(HttpServletRequest req) throws IOException {

@@ -14,16 +14,21 @@ import java.io.PrintWriter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@WebServlet(name = "PostServlet", urlPatterns = "/post")
+@WebServlet(name = "PostServlet", urlPatterns = "/posts/*")
 public class PostServlet extends HttpServlet {
     private static final String CHAR_SET = "UTF-8";
 
-    private final PostService postService = new PostService(new PostDaoImpl());
+    private final PostService postService;
+
+    public PostServlet(PostService postService) {
+        this.postService = postService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String requestPath = req.getParameter("id");
-        Long id = StringUtils.isNumeric(requestPath) ? Long.parseLong(requestPath) : null;
+        String requestPath = req.getPathInfo();
+        String[] pathArray = requestPath.split("/");
+        Long id = (pathArray.length > 0) ? Long.parseLong(pathArray[1]) : null;
 
         Optional<String> getResponse = postService.getPosts(id);
         if (getResponse.isPresent()) {
@@ -55,8 +60,7 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String requestPath = req.getParameter("id");
-        Long id = StringUtils.isNumeric(requestPath) ? Long.parseLong(requestPath) : null;
+        Long id = getId(req);
         String bodyParams = req.getReader().lines().collect(Collectors.joining());
 
         if (postService.updatePost(id, bodyParams)) {
@@ -72,9 +76,8 @@ public class PostServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String requestPath = req.getParameter("id");
-        Long id = StringUtils.isNumeric(requestPath) ? Long.parseLong(requestPath) : null;
+        Long id = getId(req);
 
         if (postService.removePost(id)) {
             resp.setStatus(HttpServletResponse.SC_OK);
@@ -85,5 +88,12 @@ public class PostServlet extends HttpServlet {
             resp.setCharacterEncoding(CHAR_SET);
             resp.getWriter().write("Не удалось удалить объект!");
         }
+    }
+
+    private Long getId(HttpServletRequest req) {
+        String requestPath = req.getPathInfo();
+        String[] pathArray = requestPath.split("/");
+
+        return Long.parseLong(pathArray[1]);
     }
 }
