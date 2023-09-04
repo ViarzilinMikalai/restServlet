@@ -10,4 +10,5 @@ public interface PostDao {
     Post getById(Long id);
     List<Post> getAllPost();
     boolean remove(Long id);
+    List<Post> getPostsByAuthorId(Long id);
 }

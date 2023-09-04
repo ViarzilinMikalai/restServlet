@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostDaoImpl implements PostDao {
+
     @Override
     public boolean savePost(Post post) {
         int result = 0;
@@ -47,19 +48,21 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Post getById(Long id) {
-        String sqlGetPostById = "SELECT * FROM post WHERE id = ?";
+        String sqlGetPostById = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id WHERE post.id = ? ";
         Post post = null;
-
         try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement getPost = connection.prepareStatement(sqlGetPostById)) {
             getPost.setLong(1, id);
             ResultSet rs = getPost.executeQuery();
             if (rs.next()) {
+                User user = new User();
                 post = new Post();
                 post.setId(rs.getLong("id"));
                 post.setTitle(rs.getString("title"));
                 post.setText(rs.getString("text"));
-                post.setAuthor(new User());
+                user.setId(rs.getLong("author"));
+                user.setUsername(rs.getString("username"));
+                post.setAuthor(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,14 +72,21 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public List<Post> getAllPost() {
-        String sqlGetAllPost = "SELECT * FROM post";
+        String sqlGetAllPost = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id";
         ArrayList<Post> posts = new ArrayList<>();
 
         try (Connection connection = JdbcConnectionProvider.getConnection();
              PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
             ResultSet rs = getPost.executeQuery();
             while (rs.next()) {
-                Post post = new Post(rs.getLong("id"), rs.getString("title"), rs.getString("text"), new User());
+                User user = new User();
+                Post post = new Post();
+                post.setId(rs.getLong("id"));
+                post.setTitle(rs.getString("title"));
+                post.setText(rs.getString("text"));
+                user.setId(rs.getLong("author"));
+                user.setUsername(rs.getString("username"));
+                post.setAuthor(user);
                 posts.add(post);
             }
         } catch (SQLException e) {
@@ -97,5 +107,31 @@ public class PostDaoImpl implements PostDao {
             e.printStackTrace();
         }
         return (result != 0);
+    }
+
+    @Override
+    public List<Post> getPostsByAuthorId(Long id) {
+        String sqlGetAllPost = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id where post.author = ?";
+        ArrayList<Post> posts = new ArrayList<>();
+
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
+            getPost.setLong(1, id);
+            ResultSet rs = getPost.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                Post post = new Post();
+                post.setId(rs.getLong("id"));
+                post.setTitle(rs.getString("title"));
+                post.setText(rs.getString("text"));
+                user.setId(rs.getLong("author"));
+                user.setUsername(rs.getString("username"));
+                post.setAuthor(user);
+                posts.add(post);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
     }
 }

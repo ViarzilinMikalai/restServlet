@@ -24,29 +24,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Testcontainers
 class PostDaoImplTest {
     private PostDaoImpl postDao = new PostDaoImpl();
+    private UserDaoImpl userDao = new UserDaoImpl();
+
     @Container
     private PostgreSQLContainer psql = new PostgreSQLContainer("postgres:14.1-alpine")
         .withDatabaseName("foo")
         .withUsername("foo")
         .withPassword("secret");
 
-    @BeforeEach
-    public void init(){
-        psql.start();
-    }
-
-    @AfterEach
-    public void clean() {
-        psql.stop();
-    }
 
     @Test
     void testSavePost() throws SQLException {
         /**
-         * Creating Post for saving
+         * Saving User
          */
         User user = new User();
+        user.setUsername("user");
+        user.setPassword("password");
+        userDao.saveUser(user);
         user.setId(1L);
+
         Post post = new Post("Post title", "Post text", user);
         postDao.savePost(post); //saving Post
 
@@ -74,12 +71,13 @@ class PostDaoImplTest {
 
     @Test
     void testGetAllPost() {
-        postDao.savePost(new Post("post1", "test1", new User(1L)));
-        postDao.savePost(new Post("post2", "test2", new User(2L)));
-        postDao.savePost(new Post("post3", "test3", new User(3L)));
+        User user = new User(1L);
+        postDao.savePost(new Post("post1", "test1", user));
+        postDao.savePost(new Post("post2", "test2", user));
+        postDao.savePost(new Post("post3", "test3", user));
 
         List<Post> posts = postDao.getAllPost();
-        assertTrue(posts.size() == 4);
+        assertTrue(posts.size() == 7);
     }
 
     @Test
@@ -89,7 +87,7 @@ class PostDaoImplTest {
         Post post = postDao.getById(2L);
         assertTrue(Objects.nonNull(post));
         assertTrue(post.getId() == 2);
-        assertTrue(post.getTitle().equals("post1"));
+        assertTrue(post.getTitle().equals("post2"));
     }
 
     @Test
@@ -105,6 +103,21 @@ class PostDaoImplTest {
         postDao.remove(1l);
         Post post = postDao.getById(1L);
         assertEquals(null, post);
+    }
+
+    @Test
+    void testGetPostsByAuthorId() {
+        User user = new User();
+        user.setUsername("user");
+        userDao.saveUser(user);
+        user.setId(1L);
+        postDao.savePost(new Post("post1", "test1", user));
+        postDao.savePost(new Post("post2", "test2", user));
+        postDao.savePost(new Post("post3", "test3", user));
+
+        List<Post> posts = postDao.getPostsByAuthorId(1L);
+        System.out.println(posts.size());
+        assertTrue(posts.size() == 3);
     }
 
     /**
