@@ -3,14 +3,14 @@ package org.verzilin.servlet_api.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class JdbcConnectionProvider {
-    private static final String DB_URL = "jdbc:tc:postgresql:///foo?TC_INITSCRIPT=file:src/main/resources/db_init.sql";
-    private static final String LOGIN = "foo";
-    private static final String PASSWORD = "secret";
-
     private JdbcConnectionProvider() {
     }
 
@@ -18,9 +18,16 @@ public class JdbcConnectionProvider {
     private static HikariDataSource ds;
 
     static {
-        config.setJdbcUrl(DB_URL);
-        config.setUsername(LOGIN);
-        config.setPassword(PASSWORD);
+        Properties properties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("src/main/resources/hikari.properties")) {
+            properties.load(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        config.setJdbcUrl(properties.getProperty("dataSource.jdbcUrl"));
+        config.setUsername(properties.getProperty("dataSource.username"));
+        config.setPassword(properties.getProperty("dataSource.password"));
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
