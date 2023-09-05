@@ -1,5 +1,6 @@
 package org.verzilin.servlet_api.dao.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -35,24 +36,27 @@ class PostDaoImplTest {
     PostDaoImplTest() throws SQLException {
     }
 
+    User user = new User();
 
-    @Test
-    void testSavePost() throws SQLException {
-        /**
-         * Saving User
-         */
-        User user = new User();
+    {
+        // Save User
+        user.setId(1L);
         user.setUsername("user");
         user.setPassword("password");
         userDao.saveUser(user);
-        user.setId(1L);
+    }
 
+    @AfterEach
+    void clear() throws SQLException {
+        executeUpdateDB("DELETE FROM post;TRUNCATE TABLE post RESTART IDENTITY CASCADE;");
+    }
+
+    @Test
+    void testSavePost() throws SQLException {
         Post post = new Post("Post title", "Post text", user);
         postDao.savePost(post); //saving Post
 
-        /**
-         * Reading saved post fom DB
-         */
+        //Reading saved post fom DB
         String selectByTitle = "SELECT * FROM post WHERE title ='Post title'";
         ResultSet rs = executeQueryDB(selectByTitle);
         if (rs.next()) {
@@ -63,34 +67,40 @@ class PostDaoImplTest {
 
     @Test
     void testUpdatePost() {
-        User user = new User();
-        user.setId(1L);
-        Post post = new Post(1L,"New post title", "New post text", user);
+        // Create and save new Post
+        Post post = new Post("Post title", "Post text", user);
+        postDao.savePost(post); //saving Post
+
+        post.setId(1L);
+        post.setTitle("New post title");
+        post.setText("New post text");
         postDao.updatePost(post);
+
         Post postFromBD = postDao.getById(1L);
         assertEquals("New post title", postFromBD.getTitle());
         assertEquals("New post text", postFromBD.getText());
+        assertEquals(post, postFromBD);
     }
 
     @Test
     void testGetAllPost() {
-        User user = new User(1L);
         postDao.savePost(new Post("post1", "test1", user));
         postDao.savePost(new Post("post2", "test2", user));
         postDao.savePost(new Post("post3", "test3", user));
 
         List<Post> posts = postDao.getAllPost();
-        assertTrue(posts.size() == 7);
+        assertTrue(posts.size() == 3);
     }
 
     @Test
     void testGetById() throws SQLException {
         String createPost = "INSERT INTO post (title, text, author) VALUES ('Test title', 'Test text', '1')";
         executeUpdateDB(createPost);
-        Post post = postDao.getById(2L);
+
+        Post post = postDao.getById(1L);
         assertTrue(Objects.nonNull(post));
-        assertTrue(post.getId() == 2);
-        assertTrue(post.getTitle().equals("post2"));
+        assertTrue(post.getAuthor().getId() == 1);
+        assertEquals("Test title", post.getTitle());
     }
 
     @Test
@@ -103,9 +113,14 @@ class PostDaoImplTest {
 
     @Test
     void testRemove() {
+        Post post = new Post(1L,"post1", "test1", user);
+        postDao.savePost(post);
+
+        Post postFromDb = postDao.getById(1L);
+        assertEquals(post, postFromDb);
+
         postDao.remove(1l);
-        Post post = postDao.getById(1L);
-        assertEquals(null, post);
+        assertEquals(null, postDao.getById(1L));
     }
 
     @Test
@@ -136,7 +151,6 @@ class PostDaoImplTest {
 
     /**
      * updateDB
-     *
      * @param sqlRequest
      * @throws SQLException
      */

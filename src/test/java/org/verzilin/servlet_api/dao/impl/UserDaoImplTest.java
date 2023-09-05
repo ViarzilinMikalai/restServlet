@@ -22,82 +22,89 @@ class UserDaoImplTest {
     UserDaoImpl userDao = new UserDaoImpl();
 
     @Container
-    PostgreSQLContainer psql;
+    private PostgreSQLContainer psql = new PostgreSQLContainer("postgres:14.1-alpine")
+            .withDatabaseName("foo")
+            .withUsername("foo")
+            .withPassword("secret");
+
+    User user1;
+    User user2;
+    User user3;
 
     @BeforeEach
     void setUp() {
-        psql = new PostgreSQLContainer("postgres:14.1-alpine")
-                .withDatabaseName("foo")
-                .withUsername("foo")
-                .withPassword("secret");
-        psql.start();
+        user1 = new User();
+        user1.setId(1L);
+        user1.setUsername("user1");
+        user1.setPassword("password1");
+
+        user2 = new User();
+        user2.setId(2L);
+        user2.setUsername("user2");
+        user2.setPassword("password2");
+
+        user3 = new User();
+        user3.setId(3L);
+        user3.setUsername("user3");
+        user3.setPassword("password3");
     }
 
     @AfterEach
-    void tearDown() {
-        psql.stop();
+    void clear() throws SQLException {
+        String sqlRequest = "DELETE FROM users;TRUNCATE TABLE users RESTART IDENTITY CASCADE;";
+        executeUpdateDB(sqlRequest);
     }
 
     @Test
     void testSaveUser() throws SQLException{
-        /**
-         * Creating User for saving
-         */
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("password");
-        userDao.saveUser(user);
 
-        /**
-         * Reading saved post fom DB
-         */
-        String selectByUsername = "SELECT * FROM users WHERE username ='username'";
+        userDao.saveUser(user1);
+
+        String selectByUsername = "SELECT * FROM users WHERE username ='user1'";
         ResultSet rs = executeQueryDB(selectByUsername);
         if (rs.next()) {
-            assertEquals("username", rs.getString("username"));
-            assertEquals("password", rs.getString("password"));
+            assertEquals("user1", rs.getString("username"));
+            assertEquals("password1", rs.getString("password"));
         }
     }
 
     @Test
     void testUpdateUser() {
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("password");
-        userDao.saveUser(user);//save new user
+        userDao.saveUser(user1);//save new user
 
-        user.setId(1L);
-        user.setPassword("newPassword");
-        user.setUsername("newUsername");
-        userDao.updateUser(user);//update new user
+
+        user1.setPassword("newPassword1");
+        user1.setUsername("newUsername1");
+        userDao.updateUser(user1);//update new user
 
         User userFromDb = userDao.getById(1L);
-        assertEquals("newUsername", userFromDb.getUsername());
-        assertEquals("newPassword", userFromDb.getPassword());
+        assertEquals("newUsername1", userFromDb.getUsername());
+        assertEquals("newPassword1", userFromDb.getPassword());
     }
 
     @Test
     void testGetAllUsers() {
-        userDao.saveUser(new User("username1", "password"));
-        userDao.saveUser(new User("username2", "password"));
-        userDao.saveUser(new User("username3", "password"));
+        userDao.saveUser(user1);
+        userDao.saveUser(user2);
+        userDao.saveUser(user3);
 
         List<User> users = userDao.getAllUsers();
         assertTrue(users.size() == 3);
     }
 
     @Test
-    void testGetById() throws SQLException {
-        String createUser = "INSERT INTO users (username, password) VALUES ('username', 'password')";
-        executeUpdateDB(createUser);
-        User user = userDao.getById(2L);
+    void testGetById(){
+        userDao.saveUser(user1);
+
+        User user = userDao.getById(1L);
+
         assertTrue(Objects.nonNull(user));
-        assertTrue(user.getId() == 2);
-        assertTrue(user.getPassword().equals("post1"));
+        assertTrue(user.getId() == 1);
+        assertTrue(user.equals(user1));
     }
 
     @Test
-    void testGetByIdWherePostNotFound() throws SQLException {
+    void testGetByIdWherePostNotFound(){
         User user = userDao.getById(15L);
         assertTrue(Objects.isNull(user));
     }

@@ -1,6 +1,6 @@
 package org.verzilin.servlet_api.dao.impl;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -30,29 +30,37 @@ class SubscriptionDaoImplTest {
         .withUsername("foo")
         .withPassword("secret");
 
-    User user1;
-    User user2;
-    User user3;
-    User user4;
 
-    @BeforeEach
-    void setUp() {
-        user1 = new User();
+    User user1 = new User();
+    User user2 = new User();
+    User user3 = new User();
+    User user4 = new User();
+
+    {
         user1.setId(1L);
         user1.setUsername("user1");
-        user2 = new User();
+
         user2.setId(2L);
         user2.setUsername("user2");
-        user3 = new User();
+
         user3.setId(3L);
         user3.setUsername("user3");
-        user4 = new User();
+
         user4.setId(4L);
         user4.setUsername("user4");
+
         userDao.saveUser(user1);
         userDao.saveUser(user2);
         userDao.saveUser(user3);
         userDao.saveUser(user4);
+    }
+
+    @AfterEach
+    void clear() throws SQLException {
+        String sqlRequest = "DELETE FROM subscription;";
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sqlRequest);
+        stmt.executeUpdate();
     }
 
     @Test

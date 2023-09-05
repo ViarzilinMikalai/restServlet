@@ -2,7 +2,6 @@ package org.verzilin.servlet_api.dao.impl;
 
 import org.verzilin.servlet_api.config.JdbcConnectionProvider;
 import org.verzilin.servlet_api.dao.UserDao;
-import org.verzilin.servlet_api.domain.Post;
 import org.verzilin.servlet_api.domain.User;
 
 import java.sql.Connection;

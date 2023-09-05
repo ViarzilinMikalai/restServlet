@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostDaoImpl implements PostDao {
-    Connection connection = JdbcConnectionProvider.getConnection();
 
     public PostDaoImpl() throws SQLException {
     }
@@ -22,7 +21,8 @@ public class PostDaoImpl implements PostDao {
     public boolean savePost(Post post) {
         int result = 0;
         String sqlCreatePost = "INSERT INTO post (title, text, author) VALUES (?,?,?)";
-        try (PreparedStatement createPost = connection.prepareStatement(sqlCreatePost)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement createPost = connection.prepareStatement(sqlCreatePost)) {
             createPost.setString(1, post.getTitle());
             createPost.setString(2, post.getText());
             createPost.setLong(3, post.getAuthor().getId());
@@ -37,7 +37,8 @@ public class PostDaoImpl implements PostDao {
     public boolean updatePost(Post post) {
         int result = 0;
         String sqlUpdatePost = "UPDATE post SET  title = ? , text = ? WHERE id = ?";
-        try (PreparedStatement updatePost = connection.prepareStatement(sqlUpdatePost)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement updatePost = connection.prepareStatement(sqlUpdatePost)) {
             updatePost.setString(1, post.getTitle());
             updatePost.setString(2, post.getText());
             updatePost.setLong(3, post.getId());
@@ -52,7 +53,8 @@ public class PostDaoImpl implements PostDao {
     public Post getById(Long id) {
         String sqlGetPostById = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id WHERE post.id = ? ";
         Post post = null;
-        try (PreparedStatement getPost = connection.prepareStatement(sqlGetPostById)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement getPost = connection.prepareStatement(sqlGetPostById)) {
             getPost.setLong(1, id);
             ResultSet rs = getPost.executeQuery();
             if (rs.next()) {
@@ -76,7 +78,8 @@ public class PostDaoImpl implements PostDao {
         String sqlGetAllPost = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id";
         ArrayList<Post> posts = new ArrayList<>();
 
-        try (PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
             ResultSet rs = getPost.executeQuery();
             while (rs.next()) {
                 User user = new User();
@@ -99,7 +102,8 @@ public class PostDaoImpl implements PostDao {
     public boolean remove(Long id) {
         int result = 0;
         String sqlDeletePost = "DELETE FROM post WHERE id = ?";
-        try (PreparedStatement deletePost = connection.prepareStatement(sqlDeletePost)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement deletePost = connection.prepareStatement(sqlDeletePost)) {
             deletePost.setLong(1, id);
             result = deletePost.executeUpdate();
         } catch (SQLException e) {
@@ -113,7 +117,8 @@ public class PostDaoImpl implements PostDao {
         String sqlGetAllPost = "SELECT post.id, post.title, post.text, post.author, users.username  FROM post JOIN users ON post.author=users.id where post.author = ?";
         ArrayList<Post> posts = new ArrayList<>();
 
-        try (PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
+        try (Connection connection = JdbcConnectionProvider.getConnection();
+             PreparedStatement getPost = connection.prepareStatement(sqlGetAllPost)) {
             getPost.setLong(1, id);
             ResultSet rs = getPost.executeQuery();
             while (rs.next()) {
