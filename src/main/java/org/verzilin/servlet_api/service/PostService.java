@@ -13,9 +13,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class PostService {
-    PostDao postDao;
-    PostMapper postMapper = Mappers.getMapper(PostMapper.class);
-    ObjectMapper objectMapper = new ObjectMapper();
+    private PostDao postDao;
+    private PostMapper postMapper = Mappers.getMapper(PostMapper.class);
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public PostService(PostDao postDao) {
         this.postDao = postDao;
@@ -59,5 +59,18 @@ public class PostService {
 
     public boolean removePost(Long id) {
         return postDao.remove(id);
+    }
+
+    public Optional<String> getPostsByAuthorId(Long id) throws JsonProcessingException {
+        Optional<String> request = Optional.empty();
+        List<Post> posts = postDao.getPostsByAuthorId(id);
+        if (!posts.isEmpty()) {
+            List<PostDto> postDto = posts
+                    .stream()
+                    .map(postMapper::toPostDto)
+                    .toList();
+            request = Optional.of(objectMapper.writeValueAsString(postDto));
+        }
+        return request;
     }
 }

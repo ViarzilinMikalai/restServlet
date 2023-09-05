@@ -1,7 +1,5 @@
 package org.verzilin.servlet_api.servlet;
 
-import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
-import org.verzilin.servlet_api.dao.impl.PostDaoImpl;
 import org.verzilin.servlet_api.service.PostService;
 
 import javax.servlet.ServletException;

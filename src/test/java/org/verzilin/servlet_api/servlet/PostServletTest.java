@@ -25,7 +25,7 @@ class PostServletTest {
     private PrintWriter printWriter = mock(PrintWriter.class);
     private BufferedReader reader = mock(BufferedReader.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private PostServlet userServlet = new PostServlet(postService);
+    private PostServlet postServlet = new PostServlet(postService);
 
 
     @Test
@@ -44,7 +44,7 @@ class PostServletTest {
         when(postService.getPosts(1L)).thenReturn(Optional.of(objectMapper.writeValueAsString(postDto)));
         when(response.getWriter()).thenReturn(printWriter);
 
-        userServlet.doGet(request, response);
+        postServlet.doGet(request, response);
 
         verify(response).setContentType("application/json; charset=UTF-8");
         verify(response).setStatus(HttpServletResponse.SC_OK);
@@ -59,7 +59,7 @@ class PostServletTest {
         when(response.getWriter()).thenReturn(printWriter);
         when(postService.createPost(bodyParams)).thenReturn(true);
 
-        userServlet.doPost(request, response);
+        postServlet.doPost(request, response);
 
         verify(postService, times(1)).createPost(bodyParams);
         verify(response, times(1)).setStatus(HttpServletResponse.SC_CREATED);
@@ -76,7 +76,7 @@ class PostServletTest {
         when(response.getWriter()).thenReturn(printWriter);
         when(postService.updatePost(1L, bodyParams)).thenReturn(true);
 
-        userServlet.doPut(request, response);
+        postServlet.doPut(request, response);
 
         verify(postService, times(1)).updatePost(1L, bodyParams);
         verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);
@@ -91,7 +91,7 @@ class PostServletTest {
         when(response.getWriter()).thenReturn(printWriter);
         when(postService.removePost(1L)).thenReturn(true);
 
-        userServlet.doDelete(request, response);
+        postServlet.doDelete(request, response);
 
         verify(postService, times(1)).removePost(1L);
         verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);

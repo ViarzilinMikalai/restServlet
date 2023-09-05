@@ -1,12 +1,12 @@
 package org.verzilin.servlet_api.dao.impl;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.verzilin.servlet_api.config.JdbcConnectionProvider;
+import org.verzilin.servlet_api.dao.PostDao;
+import org.verzilin.servlet_api.dao.UserDao;
 import org.verzilin.servlet_api.domain.Post;
 import org.verzilin.servlet_api.domain.User;
 
@@ -23,14 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 class PostDaoImplTest {
-    private PostDaoImpl postDao = new PostDaoImpl();
-    private UserDaoImpl userDao = new UserDaoImpl();
+    private PostDao postDao = new PostDaoImpl();
+    private UserDao userDao = new UserDaoImpl();
 
     @Container
     private PostgreSQLContainer psql = new PostgreSQLContainer("postgres:14.1-alpine")
         .withDatabaseName("foo")
         .withUsername("foo")
         .withPassword("secret");
+
+    PostDaoImplTest() throws SQLException {
+    }
 
 
     @Test
@@ -116,7 +119,6 @@ class PostDaoImplTest {
         postDao.savePost(new Post("post3", "test3", user));
 
         List<Post> posts = postDao.getPostsByAuthorId(1L);
-        System.out.println(posts.size());
         assertTrue(posts.size() == 3);
     }
 

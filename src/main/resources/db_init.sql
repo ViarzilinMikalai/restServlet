@@ -12,3 +12,7 @@ CREATE TABLE post (
     author INTEGER REFERENCES users (id) ON DELETE CASCADE
 );
 
+CREATE TABLE subscription (
+    owner_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    subscriber_id INTEGER REFERENCES users (id) ON DELETE CASCADE
+);

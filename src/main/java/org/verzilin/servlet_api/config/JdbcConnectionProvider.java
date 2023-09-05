@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class JdbcConnectionProvider {
-    private static final String DB_URL = "jdbc:tc:postgresql:///foo?TC_INITSCRIPT=file:src/test/resources/db_init.sql";
+    private static final String DB_URL = "jdbc:tc:postgresql:///foo?TC_INITSCRIPT=file:src/main/resources/db_init.sql";
     private static final String LOGIN = "foo";
     private static final String PASSWORD = "secret";
 

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.verzilin.servlet_api.config.JdbcConnectionProvider;
-import org.verzilin.servlet_api.domain.Post;
 import org.verzilin.servlet_api.domain.User;
 
 import java.sql.Connection;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserDaoImplTest {
     UserDaoImpl userDao = new UserDaoImpl();

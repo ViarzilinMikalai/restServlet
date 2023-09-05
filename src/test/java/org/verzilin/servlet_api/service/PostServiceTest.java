@@ -14,11 +14,11 @@ import static org.mockito.Mockito.*;
 
 
 class PostServiceTest {
-    PostDao postDao = mock(PostDaoImpl.class);
-    PostService postService = new PostService(postDao);
+    private PostDao postDao = mock(PostDaoImpl.class);
+    private PostService postService = new PostService(postDao);
 
     @Test
-    void getPosts() throws JsonProcessingException {
+    void testGetPosts() throws JsonProcessingException {
         User user1 = new User();
         user1.setId(1L);
         user1.setUsername("user1");
@@ -48,7 +48,7 @@ class PostServiceTest {
         List<Post> allPost = new ArrayList<>();
         allPost.add(post1);
         allPost.add(post2);
-        allPost.add(post2);
+        allPost.add(post3);
 
         when(postDao.getById(1L)).thenReturn(post1);
         when(postDao.getAllPost()).thenReturn(allPost);
@@ -61,7 +61,7 @@ class PostServiceTest {
     }
 
     @Test
-    void createPost() throws JsonProcessingException {
+    void testCreatePost() throws JsonProcessingException {
         User user = new User();
         user.setId(1L);
         user.setUsername("user");
@@ -81,7 +81,7 @@ class PostServiceTest {
     }
 
     @Test
-    void updatePost() throws JsonProcessingException {
+    void testUpdatePost() throws JsonProcessingException {
         User user = new User();
         user.setId(1L);
         user.setUsername("user");
@@ -103,8 +103,38 @@ class PostServiceTest {
     }
 
     @Test
-    void removePost() {
+    void testRemovePost() {
         postService.removePost(1L);
         verify(postDao, times(1)).remove(1L);
+    }
+
+
+    @Test
+    void testGetPostsByAuthorId() throws JsonProcessingException {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setUsername("user1");
+
+        Post post1 = new Post();
+        post1.setId(1L);
+        post1.setTitle("title1");
+        post1.setText("text1");
+        post1.setAuthor(user1);
+
+        Post post2 = new Post();
+        post2.setId(2L);
+        post2.setTitle("title2");
+        post2.setText("text2");
+        post2.setAuthor(user1);
+
+        List<Post> allPost = new ArrayList<>();
+        allPost.add(post1);
+        allPost.add(post2);
+
+        when(postDao.getPostsByAuthorId(1L)).thenReturn(allPost);
+
+        postService.getPostsByAuthorId(1L).get();
+
+        verify(postDao, times(1)).getPostsByAuthorId(1L);
     }
 }
