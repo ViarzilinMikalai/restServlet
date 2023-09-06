@@ -1,8 +1,5 @@
 package org.verzilin.servlet_api.dto;
 
-import org.verzilin.servlet_api.domain.Post;
-import org.verzilin.servlet_api.domain.User;
-
 import java.util.*;
 
 public class UserDto {

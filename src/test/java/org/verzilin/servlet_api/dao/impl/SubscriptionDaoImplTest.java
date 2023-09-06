@@ -37,6 +37,12 @@ class SubscriptionDaoImplTest {
     User user4 = new User();
 
     {
+        // Clear table USERS
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("DELETE FROM users;TRUNCATE TABLE users RESTART IDENTITY CASCADE;");
+        stmt.executeUpdate();
+        connection.close();
+
         user1.setId(1L);
         user1.setUsername("user1");
 
@@ -61,6 +67,7 @@ class SubscriptionDaoImplTest {
         Connection connection = JdbcConnectionProvider.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sqlRequest);
         stmt.executeUpdate();
+        connection.close();
     }
 
     @Test

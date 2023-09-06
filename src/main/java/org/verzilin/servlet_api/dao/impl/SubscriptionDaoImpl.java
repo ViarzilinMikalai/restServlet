@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SubscriptionDaoImpl implements SubscriptionDao {
-    public SubscriptionDaoImpl() throws SQLException {
+    public SubscriptionDaoImpl() {
     }
 
     public boolean subscribe(Long ownerId, Long subscriberId) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PostDaoImpl implements PostDao {
 
-    public PostDaoImpl() throws SQLException {
+    public PostDaoImpl() {
     }
 
     @Override

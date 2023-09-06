@@ -32,7 +32,13 @@ class UserDaoImplTest {
     User user3;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        // Clear table USERS
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("DELETE FROM users;TRUNCATE TABLE users RESTART IDENTITY CASCADE;");
+        stmt.executeUpdate();
+        connection.close();
+
         user1 = new User();
         user1.setId(1L);
         user1.setUsername("user1");
@@ -126,5 +132,6 @@ class UserDaoImplTest {
         Connection connection = JdbcConnectionProvider.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sqlRequest);
         stmt.executeUpdate();
+        connection.close();
     }
 }

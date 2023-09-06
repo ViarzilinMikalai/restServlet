@@ -39,6 +39,12 @@ class PostDaoImplTest {
     User user = new User();
 
     {
+        // Clear table USERS
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("DELETE FROM users;TRUNCATE TABLE users RESTART IDENTITY CASCADE;");
+        stmt.executeUpdate();
+        connection.close();
+
         // Save User
         user.setId(1L);
         user.setUsername("user");
@@ -48,7 +54,10 @@ class PostDaoImplTest {
 
     @AfterEach
     void clear() throws SQLException {
-        executeUpdateDB("DELETE FROM post;TRUNCATE TABLE post RESTART IDENTITY CASCADE;");
+        Connection connection = JdbcConnectionProvider.getConnection();
+        PreparedStatement stmt = connection.prepareStatement("DELETE FROM post;TRUNCATE TABLE post RESTART IDENTITY CASCADE;");
+        stmt.executeUpdate();
+        connection.close();
     }
 
     @Test
@@ -68,7 +77,8 @@ class PostDaoImplTest {
     @Test
     void testUpdatePost() {
         // Create and save new Post
-        Post post = new Post("Post title", "Post text", user);
+        User userFromDb = userDao.getById(1L);
+        Post post = new Post("Post title", "Post text", userFromDb);
         postDao.savePost(post); //saving Post
 
         post.setId(1L);

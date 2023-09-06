@@ -16,7 +16,7 @@ import java.util.Optional;
 public class SubscriptionServlet extends HttpServlet {
     private static final String CHAR_SET = "UTF-8";
 
-    private SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
 
     public SubscriptionServlet(SubscriptionService subscriptionService) {
         this.subscriptionService = subscriptionService;
