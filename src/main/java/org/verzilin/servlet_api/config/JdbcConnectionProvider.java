@@ -3,9 +3,8 @@ package org.verzilin.servlet_api.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.sql.DataSource;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -19,7 +18,7 @@ public class JdbcConnectionProvider {
 
     static {
         Properties properties = new Properties();
-        try (FileInputStream fileInputStream = new FileInputStream("src/main/resources/hikari.properties")) {
+        try (InputStream fileInputStream = JdbcConnectionProvider.class.getResourceAsStream("/hikari.properties")) {
             properties.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
